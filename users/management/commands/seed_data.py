@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
+from constants import PROJECT_STATUS_OPEN
 from projects.models import Project, Skill
 
 User = get_user_model()
@@ -49,7 +50,7 @@ class Command(BaseCommand):
             description="Простое приложение для отслеживания задач в команде.",
             owner=alice,
             github_url="https://github.com/alice/task-tracker",
-            status="open",
+            status=PROJECT_STATUS_OPEN,
         )
         task_tracker.skills.set([skill_python, skill_django])
         task_tracker.participants.add(alice)
@@ -59,7 +60,7 @@ class Command(BaseCommand):
             description="Сервис для автоматической генерации красивых портфолио по GitHub профилю.",
             owner=bob,
             github_url="https://github.com/bob/portfolio-gen",
-            status="open",
+            status=PROJECT_STATUS_OPEN,
         )
         portfolio_generator.skills.set([skill_react, skill_typescript])
         portfolio_generator.participants.add(bob)
@@ -68,7 +69,7 @@ class Command(BaseCommand):
             name="Дизайн-система",
             description="Набор UI-компонентов и гайдлайнов для командной разработки.",
             owner=carol,
-            status="open",
+            status=PROJECT_STATUS_OPEN,
         )
         design_system.skills.set([skill_figma, skill_react])
         design_system.participants.add(carol)
