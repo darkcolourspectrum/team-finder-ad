@@ -3,9 +3,9 @@ services:
     image: postgres:16
     container_name: teamfinder_db
     environment:
-      POSTGRES_DB: team_finder
-      POSTGRES_USER: team_finder
-      POSTGRES_PASSWORD: team_finder
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "127.0.0.1:5433:5432"
     volumes:

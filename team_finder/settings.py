@@ -57,31 +57,19 @@ DATABASES = {
         "NAME": config("POSTGRES_DB"),
         "USER": config("POSTGRES_USER"),
         "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": "127.0.0.1",
         "PORT": config("POSTGRES_PORT", default=5432, cast=int),
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = []
-if not DEBUG:
-    AUTH_PASSWORD_VALIDATORS.extend([
-        {
-            "NAME": "django.contrib.auth.password_validation"
-                    ".UserAttributeSimilarityValidator"
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation"
-                    ".MinimumLengthValidator"
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation"
-                    ".CommonPasswordValidator"
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation"
-                    ".NumericPasswordValidator"
-        },
-    ])
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
 
 AUTH_USER_MODEL = "users.User"
 

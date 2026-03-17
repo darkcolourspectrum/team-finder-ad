@@ -4,6 +4,9 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+
 User = get_user_model()
 
 
@@ -20,6 +23,14 @@ class RegisterForm(forms.Form):
                 "Пользователь с таким email уже существует."
             )
         return email
+    
+    def clean_password(self):
+        password = self.cleaned_data.get("password")
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            raise forms.ValidationError(e.messages)
+        return password
 
 
 class LoginForm(forms.Form):

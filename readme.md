@@ -67,3 +67,13 @@ python manage.py runserver
 ```bash
 python manage.py createsuperuser
 ```
+
+### 6. Тестовые данные
+```bash
+python manage.py seed_data
+```
+
+Создаёт 3 тестовых пользователя с проектами:
+- alice@example.com / testpass123
+- bob@example.com / testpass123  
+- carol@example.com / testpass123
