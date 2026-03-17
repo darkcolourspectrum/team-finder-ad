@@ -11,7 +11,9 @@ from .models import Project, Skill
 
 
 def project_list_view(request):
-    projects = Project.objects.select_related("owner").prefetch_related("participants")
+    projects = Project.objects.select_related("owner").prefetch_related(
+        "participants"
+    )
     all_skills = Skill.objects.order_by("name").values_list("name", flat=True)
     active_skill = request.GET.get("skill", "").strip()
 
@@ -31,10 +33,16 @@ def project_list_view(request):
 
 def project_detail_view(request, project_id):
     project = get_object_or_404(
-        Project.objects.select_related("owner").prefetch_related("participants", "skills"),
+        Project.objects.select_related("owner").prefetch_related(
+            "participants", "skills"
+        ),
         pk=project_id,
     )
-    return render(request, "projects/project-details.html", {"project": project})
+    return render(
+        request,
+        "projects/project-details.html",
+        {"project": project},
+    )
 
 
 @login_required
@@ -47,9 +55,17 @@ def create_project_view(request):
             project.save()
             project.participants.add(request.user)
             return redirect("projects:detail", project_id=project.pk)
-        return render(request, "projects/create-project.html", {"form": form, "is_edit": False})
+        return render(
+            request,
+            "projects/create-project.html",
+            {"form": form, "is_edit": False},
+        )
     form = ProjectForm()
-    return render(request, "projects/create-project.html", {"form": form, "is_edit": False})
+    return render(
+        request,
+        "projects/create-project.html",
+        {"form": form, "is_edit": False},
+    )
 
 
 @login_required
@@ -60,9 +76,17 @@ def edit_project_view(request, project_id):
         if form.is_valid():
             form.save()
             return redirect("projects:detail", project_id=project.pk)
-        return render(request, "projects/create-project.html", {"form": form, "is_edit": True})
+        return render(
+            request,
+            "projects/create-project.html",
+            {"form": form, "is_edit": True},
+        )
     form = ProjectForm(instance=project)
-    return render(request, "projects/create-project.html", {"form": form, "is_edit": True})
+    return render(
+        request,
+        "projects/create-project.html",
+        {"form": form, "is_edit": True},
+    )
 
 
 @login_required
@@ -70,9 +94,13 @@ def edit_project_view(request, project_id):
 def complete_project_view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     if project.owner != request.user:
-        return JsonResponse({"status": "error", "detail": "Forbidden"}, status=403)
+        return JsonResponse(
+            {"status": "error", "detail": "Forbidden"}, status=403
+        )
     if project.status != "open":
-        return JsonResponse({"status": "error", "detail": "Already closed"}, status=400)
+        return JsonResponse(
+            {"status": "error", "detail": "Already closed"}, status=400
+        )
     project.status = "closed"
     project.save()
     return JsonResponse({"status": "ok", "project_status": "closed"})
@@ -84,7 +112,13 @@ def toggle_participate_view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     user = request.user
     if project.owner == user:
-        return JsonResponse({"status": "error", "detail": "Owner cannot toggle participate"}, status=400)
+        return JsonResponse(
+            {
+                "status": "error",
+                "detail": "Owner cannot toggle participate",
+            },
+            status=400,
+        )
     if user in project.participants.all():
         project.participants.remove(user)
         participating = False
@@ -94,7 +128,19 @@ def toggle_participate_view(request, project_id):
     return JsonResponse({"status": "ok", "participant": participating})
 
 
-# ---- Skills endpoints (Variant 3) ----
+@login_required
+@require_POST
+def toggle_favorite_view(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    user = request.user
+    if project in user.favorites.all():
+        user.favorites.remove(project)
+        favorited = False
+    else:
+        user.favorites.add(project)
+        favorited = True
+    return JsonResponse({"status": "ok", "favorited": favorited})
+
 
 def skills_autocomplete_view(request):
     q = request.GET.get("q", "").strip()
@@ -108,12 +154,16 @@ def skills_autocomplete_view(request):
 def add_skill_view(request, project_id):
     project = get_object_or_404(Project, pk=project_id)
     if project.owner != request.user:
-        return JsonResponse({"status": "error", "detail": "Forbidden"}, status=403)
+        return JsonResponse(
+            {"status": "error", "detail": "Forbidden"}, status=403
+        )
 
     try:
         body = json.loads(request.body)
     except (json.JSONDecodeError, ValueError):
-        return JsonResponse({"status": "error", "detail": "Invalid JSON"}, status=400)
+        return JsonResponse(
+            {"status": "error", "detail": "Invalid JSON"}, status=400
+        )
 
     skill_id = body.get("skill_id")
     name = body.get("name", "").strip()
@@ -124,13 +174,21 @@ def add_skill_view(request, project_id):
     elif name:
         skill, created = Skill.objects.get_or_create(name=name)
     else:
-        return JsonResponse({"status": "error", "detail": "skill_id or name required"}, status=400)
+        return JsonResponse(
+            {"status": "error", "detail": "skill_id or name required"},
+            status=400,
+        )
 
     added = skill not in project.skills.all()
     if added:
         project.skills.add(skill)
 
-    return JsonResponse({"id": skill.id, "name": skill.name, "created": created, "added": added})
+    return JsonResponse(
+        {
+            "id": skill.id, "name": skill.name,
+            "created": created, "added": added,
+        }
+    )
 
 
 @login_required
@@ -138,9 +196,23 @@ def add_skill_view(request, project_id):
 def remove_skill_view(request, project_id, skill_id):
     project = get_object_or_404(Project, pk=project_id)
     if project.owner != request.user:
-        return JsonResponse({"status": "error", "detail": "Forbidden"}, status=403)
+        return JsonResponse(
+            {"status": "error", "detail": "Forbidden"}, status=403
+        )
     skill = get_object_or_404(Skill, pk=skill_id)
     if skill not in project.skills.all():
-        return JsonResponse({"status": "error", "detail": "Skill not in project"}, status=400)
+        return JsonResponse(
+            {"status": "error", "detail": "Skill not in project"}, status=400
+        )
     project.skills.remove(skill)
     return JsonResponse({"status": "ok"})
+
+
+@login_required
+def favorites_view(request):
+    projects = request.user.favorites.all().order_by("-created_at")
+    return render(
+        request,
+        "projects/favorite_projects.html",
+        {"projects": projects},
+    )

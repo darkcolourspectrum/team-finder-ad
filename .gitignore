@@ -147,4 +147,5 @@ dmypy.json
 
 *.Identifier
 
+/media/*
 !/media/.gitkeep

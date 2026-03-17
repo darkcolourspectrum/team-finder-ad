@@ -29,7 +29,9 @@ class Project(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     github_url = models.URLField(blank=True)
-    status = models.CharField(max_length=6, choices=STATUS_CHOICES, default="open")
+    status = models.CharField(
+        max_length=6, choices=STATUS_CHOICES, default="open"
+    )
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="participated_projects",

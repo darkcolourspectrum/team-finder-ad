@@ -23,17 +23,46 @@ AVATAR_COLORS = [
 
 
 def generate_avatar(letter: str) -> ContentFile:
-    """Generate a simple avatar image with the first letter of the user's name."""
     size = 200
     color = random.choice(AVATAR_COLORS)
 
     img = Image.new("RGB", (size, size), color=color)
     draw = ImageDraw.Draw(img)
 
+    font = None
+    font_size = 100
+
     try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 100)
+        font = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            font_size,
+        )
     except OSError:
-        font = ImageFont.load_default()
+        pass
+
+    if font is None:
+        try:
+            import ctypes.util
+            win_font = ctypes.util.find_library("arial")
+            if win_font:
+                font = ImageFont.truetype(win_font, font_size)
+        except Exception:
+            pass
+
+    if font is None:
+        try:
+            font = ImageFont.truetype("arial.ttf", font_size)
+        except OSError:
+            pass
+
+    if font is None:
+        try:
+            font = ImageFont.truetype("C:/Windows/Fonts/arial.ttf", font_size)
+        except OSError:
+            pass
+
+    if font is None:
+        font = ImageFont.load_default(size=font_size)
 
     text = letter.upper()
     bbox = draw.textbbox((0, 0), text, font=font)
@@ -53,12 +82,16 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("Email is required")
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name, surname=surname, **extra_fields)
+        user = self.model(
+            email=email, name=name, surname=surname, **extra_fields
+        )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name, surname, password=None, **extra_fields):
+    def create_superuser(
+        self, email, name, surname, password=None, **extra_fields
+    ):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, name, surname, password, **extra_fields)
@@ -72,6 +105,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=12, blank=True)
     github_url = models.URLField(blank=True)
     about = models.TextField(max_length=256, blank=True)
+    favorites = models.ManyToManyField(
+        "projects.Project",
+        related_name="interested_users",
+        blank=True,
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -81,7 +119,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
-        # Generate avatar on first save if not provided
         if not self.pk and not self.avatar:
             letter = self.name[0] if self.name else "U"
             avatar_content = generate_avatar(letter)

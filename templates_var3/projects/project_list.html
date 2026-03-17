@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Актуальные проекты{% endblock %}
-
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/project_list.css' %}">
 {% endblock %}
-
 {% with page_id="projects-list" %}
 {% block content %}
 <div class="project-container">
@@ -17,7 +14,6 @@
         {% endif %}
     </div>
     <p class="project-subtitle">Найдите интересный проект и присоединитесь к команде</p>
-
     <div class="skills-filter">
         <span class="filter-label">Фильтр по необходимым навыкам:</span>
         <div class="filter-chips">
@@ -32,7 +28,6 @@
             {% endif %}
         </div>
     </div>
-
     <div class="projects-grid">
         {% for project in projects %}
         {% include 'includes/project-card.html' %}
@@ -40,8 +35,20 @@
         {% include 'includes/empty-project-card.html' with empty_title="Пока нет проектов" empty_message="Создавайте проекты и делитесь ими с другими пользователями!" button_link="/projects/create-project" button_text="+ Создать проект" %}
         {% endfor %}
     </div>
+
+    {% if projects.has_other_pages %}
+    <div class="pagination">
+        {% if projects.has_previous %}
+            <a href="?page={{ projects.previous_page_number }}{% if active_skill %}&skill={{ active_skill }}{% endif %}" class="pagination-btn">&laquo; Назад</a>
+        {% endif %}
+        <span class="pagination-info">Страница {{ projects.number }} из {{ projects.paginator.num_pages }}</span>
+        {% if projects.has_next %}
+            <a href="?page={{ projects.next_page_number }}{% if active_skill %}&skill={{ active_skill }}{% endif %}" class="pagination-btn">Вперёд &raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
     {% include 'includes/project-fav-toggle.js' %}
 </div>
-
 {% endblock %}
 {% endwith %}

@@ -16,7 +16,9 @@ class RegisterForm(forms.Form):
     def clean_email(self):
         email = self.cleaned_data["email"]
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Пользователь с таким email уже существует.")
+            raise forms.ValidationError(
+                "Пользователь с таким email уже существует."
+            )
         return email
 
 
@@ -26,7 +28,6 @@ class LoginForm(forms.Form):
 
 
 def normalize_phone(phone: str) -> str:
-    """Normalize phone: 8XXXXXXXXXX -> +7XXXXXXXXXX"""
     if phone.startswith("8"):
         return "+7" + phone[1:]
     return phone
@@ -46,6 +47,7 @@ class EditProfileForm(forms.ModelForm):
         }
         widgets = {
             "about": forms.Textarea(attrs={"rows": 3}),
+            "avatar": forms.FileInput(),
         }
 
     def clean_phone(self):
@@ -62,24 +64,22 @@ class EditProfileForm(forms.ModelForm):
 
         normalized = normalize_phone(phone)
 
-        # Check uniqueness excluding current user
-        qs = User.objects.filter(phone__in=[normalized, phone])
+        qs = User.objects.filter(phone=normalized)
         if self.instance and self.instance.pk:
             qs = qs.exclude(pk=self.instance.pk)
-        # Also check the alternative format
-        alt = phone if normalized != phone else ("8" + phone[2:] if phone.startswith("+7") else phone)
-        qs2 = User.objects.filter(phone=normalized)
-        if self.instance and self.instance.pk:
-            qs2 = qs2.exclude(pk=self.instance.pk)
-        if qs2.exists():
-            raise forms.ValidationError("Этот номер телефона уже используется другим пользователем.")
+        if qs.exists():
+            raise forms.ValidationError(
+                "Этот номер телефона уже используется другим пользователем."
+            )
 
         return normalized
 
     def clean_github_url(self):
         url = self.cleaned_data.get("github_url", "").strip()
         if url and "github.com" not in url:
-            raise forms.ValidationError("Ссылка должна вести на GitHub (github.com).")
+            raise forms.ValidationError(
+                "Ссылка должна вести на GitHub (github.com)."
+            )
         return url
 
 

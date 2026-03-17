@@ -35,7 +35,9 @@ ROOT_URLCONF = "team_finder.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / f"templates_var{config('TASK_VERSION', default='3')}"],
+        "DIRS": [
+            BASE_DIR / f"templates_var{config('TASK_VERSION', default='3')}"
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -55,7 +57,7 @@ DATABASES = {
         "NAME": config("POSTGRES_DB"),
         "USER": config("POSTGRES_USER"),
         "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": "127.0.0.1",  
+        "HOST": "127.0.0.1",
         "PORT": config("POSTGRES_PORT", default=5432, cast=int),
     }
 }
@@ -63,10 +65,22 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = []
 if not DEBUG:
     AUTH_PASSWORD_VALIDATORS.extend([
-        {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-        {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-        {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-        {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+        {
+            "NAME": "django.contrib.auth.password_validation"
+                    ".UserAttributeSimilarityValidator"
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation"
+                    ".MinimumLengthValidator"
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation"
+                    ".CommonPasswordValidator"
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation"
+                    ".NumericPasswordValidator"
+        },
     ])
 
 AUTH_USER_MODEL = "users.User"

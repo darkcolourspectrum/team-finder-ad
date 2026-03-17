@@ -1,5 +1,4 @@
 {% load static %}
-
 <div class="project-card">
     <div class="project-card-header-title">
         <div class="project-card-header">
@@ -14,13 +13,19 @@
                     <small class="project-date">{{ project.created_at|date:"d.m.Y" }}</small>
                 </div>
             </div>
+            {% if request.user.is_authenticated %}
+            <button
+                class="project-fav-icon {% if project in request.user.favorites.all %}favorite{% else %}not-favorite{% endif %}"
+                data-project-id="{{ project.id }}"
+                data-fav="{% if project in request.user.favorites.all %}true{% else %}false{% endif %}"
+                title="Добавить в избранное">
+                {% include 'includes/svg/heart.html' %}
+            </button>
+            {% endif %}
         </div>
-
         <h3 class="project-card-title"><a href="/projects/{{ project.id }}">{{ project.name }}</a></h3>
     </div>
-
     <p class="project-card-description">{{ project.description|truncatechars:150 }}</p>
-
     <div class="project-card-footer">
         <span class="project-status-black">
             {% if project.status == "open" %}
