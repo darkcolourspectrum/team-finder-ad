@@ -3,16 +3,19 @@ import re
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
-
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+
+from constants import NAME_MAX_LENGTH, SURNAME_MAX_LENGTH
+from projects.forms import validate_github_url
+from users.service import normalize_phone
 
 User = get_user_model()
 
 
 class RegisterForm(forms.Form):
-    name = forms.CharField(max_length=124, label="Имя")
-    surname = forms.CharField(max_length=124, label="Фамилия")
+    name = forms.CharField(max_length=NAME_MAX_LENGTH, label="Имя")
+    surname = forms.CharField(max_length=SURNAME_MAX_LENGTH, label="Фамилия")
     email = forms.EmailField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
 
@@ -23,7 +26,7 @@ class RegisterForm(forms.Form):
                 "Пользователь с таким email уже существует."
             )
         return email
-    
+
     def clean_password(self):
         password = self.cleaned_data.get("password")
         try:
@@ -36,12 +39,6 @@ class RegisterForm(forms.Form):
 class LoginForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
-
-
-def normalize_phone(phone: str) -> str:
-    if phone.startswith("8"):
-        return "+7" + phone[1:]
-    return phone
 
 
 class EditProfileForm(forms.ModelForm):
@@ -87,14 +84,10 @@ class EditProfileForm(forms.ModelForm):
 
     def clean_github_url(self):
         url = self.cleaned_data.get("github_url", "").strip()
-        if url and "github.com" not in url:
-            raise forms.ValidationError(
-                "Ссылка должна вести на GitHub (github.com)."
-            )
-        return url
+        return validate_github_url(url)
 
 
-class CustomPasswordChangeForm(PasswordChangeForm):
+class UserPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
         label="Текущий пароль",
         widget=forms.PasswordInput,

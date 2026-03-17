@@ -1,15 +1,25 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.utils.html import format_html
 
-from .models import User
+from users.models import User
 
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    list_display = ("email", "name", "surname", "is_staff", "is_active")
+    list_display = ("email", "name", "surname", "avatar_thumbnail", "is_staff", "is_active")
     list_filter = ("is_staff", "is_active")
     search_fields = ("email", "name", "surname")
     ordering = ("email",)
+
+    @admin.display(description="Аватар")
+    def avatar_thumbnail(self, obj):
+        if obj.avatar:
+            return format_html(
+                '<img src="{}" width="40" height="40" style="border-radius: 50%;" />',
+                obj.avatar.url,
+            )
+        return "-"
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),

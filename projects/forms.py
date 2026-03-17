@@ -2,15 +2,18 @@ from django import forms
 
 from .models import Project
 
+GITHUB_DOMAIN = "github.com"
+
+
+def validate_github_url(url):
+    if url and GITHUB_DOMAIN not in url:
+        raise forms.ValidationError("Ссылка должна вести на GitHub")
+    return url
+
 
 class ProjectForm(forms.ModelForm):
-    STATUS_CHOICES_RU = [
-        ("open", "Открыт"),
-        ("closed", "Закрыт"),
-    ]
-
     status = forms.ChoiceField(
-        choices=STATUS_CHOICES_RU,
+        choices=Project.STATUS_CHOICES,
         label="Статус",
     )
 
@@ -29,6 +32,4 @@ class ProjectForm(forms.ModelForm):
 
     def clean_github_url(self):
         url = self.cleaned_data.get("github_url", "").strip()
-        if url and "github.com" not in url:
-            raise forms.ValidationError("Ссылка должна вести на GitHub")
-        return url
+        return validate_github_url(url)

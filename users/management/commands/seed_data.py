@@ -1,5 +1,6 @@
-from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
+
 from projects.models import Project, Skill
 
 User = get_user_model()
@@ -13,7 +14,6 @@ class Command(BaseCommand):
             self.stdout.write("Тестовые данные уже существуют, пропускаем.")
             return
 
-        # Пользователи
         alice = User.objects.create_user(
             email="alice@example.com",
             name="Алиса",
@@ -38,42 +38,40 @@ class Command(BaseCommand):
             about="UI/UX дизайнер.",
         )
 
-        # Навыки
-        python = Skill.objects.get_or_create(name="Python")[0]
-        react = Skill.objects.get_or_create(name="React")[0]
-        django = Skill.objects.get_or_create(name="Django")[0]
-        figma = Skill.objects.get_or_create(name="Figma")[0]
-        typescript = Skill.objects.get_or_create(name="TypeScript")[0]
+        skill_python = Skill.objects.get_or_create(name="Python")[0]
+        skill_react = Skill.objects.get_or_create(name="React")[0]
+        skill_django = Skill.objects.get_or_create(name="Django")[0]
+        skill_figma = Skill.objects.get_or_create(name="Figma")[0]
+        skill_typescript = Skill.objects.get_or_create(name="TypeScript")[0]
 
-        # Проекты
-        p1 = Project.objects.create(
+        task_tracker = Project.objects.create(
             name="Трекер задач",
             description="Простое приложение для отслеживания задач в команде.",
             owner=alice,
             github_url="https://github.com/alice/task-tracker",
             status="open",
         )
-        p1.skills.set([python, django])
-        p1.participants.add(alice)
+        task_tracker.skills.set([skill_python, skill_django])
+        task_tracker.participants.add(alice)
 
-        p2 = Project.objects.create(
+        portfolio_generator = Project.objects.create(
             name="Портфолио-генератор",
             description="Сервис для автоматической генерации красивых портфолио по GitHub профилю.",
             owner=bob,
             github_url="https://github.com/bob/portfolio-gen",
             status="open",
         )
-        p2.skills.set([react, typescript])
-        p2.participants.add(bob)
+        portfolio_generator.skills.set([skill_react, skill_typescript])
+        portfolio_generator.participants.add(bob)
 
-        p3 = Project.objects.create(
+        design_system = Project.objects.create(
             name="Дизайн-система",
             description="Набор UI-компонентов и гайдлайнов для командной разработки.",
             owner=carol,
             status="open",
         )
-        p3.skills.set([figma, react])
-        p3.participants.add(carol)
+        design_system.skills.set([skill_figma, skill_react])
+        design_system.participants.add(carol)
 
         self.stdout.write(self.style.SUCCESS(
             "Тестовые данные созданы: 3 пользователя, 3 проекта."

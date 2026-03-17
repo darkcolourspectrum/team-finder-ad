@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.shortcuts import redirect
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.shortcuts import redirect
+from django.urls import path, include
 
 
 def root_redirect(request):
@@ -14,4 +14,7 @@ urlpatterns = [
     path("", root_redirect),
     path("users/", include("users.urls")),
     path("projects/", include("projects.urls")),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

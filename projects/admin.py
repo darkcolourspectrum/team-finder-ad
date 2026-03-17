@@ -11,7 +11,11 @@ class SkillAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "owner", "status", "created_at")
+    list_display = ("id", "name", "owner", "status", "created_at", "participants_count")
     list_filter = ("status",)
     search_fields = ("name", "owner__email")
     filter_horizontal = ("participants", "skills")
+
+    @admin.display(description="Участников")
+    def participants_count(self, obj):
+        return obj.participants.count()

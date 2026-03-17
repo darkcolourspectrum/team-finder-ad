@@ -1,52 +1,81 @@
 from django.conf import settings
 from django.db import models
 
+from constants import (
+    PROJECT_NAME_MAX_LENGTH,
+    PROJECT_STATUS_CLOSED,
+    PROJECT_STATUS_MAX_LENGTH,
+    PROJECT_STATUS_OPEN,
+)
+
 
 class Skill(models.Model):
-    name = models.CharField(max_length=124, unique=True)
-
-    def __str__(self):
-        return self.name
+    name = models.CharField(
+        max_length=124,
+        unique=True,
+        verbose_name="Название",
+    )
 
     class Meta:
         verbose_name = "Навык"
         verbose_name_plural = "Навыки"
         ordering = ["name"]
 
+    def __str__(self):
+        return self.name
+
 
 class Project(models.Model):
     STATUS_CHOICES = [
-        ("open", "Open"),
-        ("closed", "Closed"),
+        (PROJECT_STATUS_OPEN, "Открыт"),
+        (PROJECT_STATUS_CLOSED, "Закрыт"),
     ]
 
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
+    name = models.CharField(
+        max_length=PROJECT_NAME_MAX_LENGTH,
+        verbose_name="Название",
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name="Описание",
+    )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="owned_projects",
+        verbose_name="Автор",
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    github_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания",
+    )
+    github_url = models.URLField(
+        blank=True,
+        verbose_name="GitHub",
+    )
     status = models.CharField(
-        max_length=6, choices=STATUS_CHOICES, default="open"
+        max_length=PROJECT_STATUS_MAX_LENGTH,
+        choices=STATUS_CHOICES,
+        default=PROJECT_STATUS_OPEN,
+        verbose_name="Статус",
     )
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         related_name="participated_projects",
         blank=True,
+        verbose_name="Участники",
     )
     skills = models.ManyToManyField(
         Skill,
         related_name="projects",
         blank=True,
+        verbose_name="Навыки",
     )
-
-    def __str__(self):
-        return self.name
 
     class Meta:
         verbose_name = "Проект"
         verbose_name_plural = "Проекты"
         ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
