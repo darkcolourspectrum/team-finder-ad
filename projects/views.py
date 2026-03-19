@@ -11,8 +11,8 @@ from constants import (
     PROJECT_STATUS_OPEN,
     SKILLS_AUTOCOMPLETE_LIMIT
 )
-from .forms import ProjectForm
-from .models import Project, Skill
+from projects.forms import ProjectForm
+from projects.models import Project, Skill
 from service import paginate
 
 
