@@ -10,35 +10,14 @@ from PIL import Image, ImageDraw, ImageFont
 from constants import (
     ABOUT_MAX_LENGTH,
     AVATAR_FONT_SIZE,
+    AVATAR_COLORS,
     AVATAR_SIZE,
-    COLOR_BLUE,
-    COLOR_CYAN,
-    COLOR_GREEN,
-    COLOR_LIGHT_ORANGE,
-    COLOR_LIME,
-    COLOR_ORANGE,
-    COLOR_PINK,
-    COLOR_PURPLE,
-    COLOR_RED,
-    COLOR_YELLOW,
     NAME_MAX_LENGTH,
     PHONE_MAX_LENGTH,
     SURNAME_MAX_LENGTH,
 )
-from users.managers import UserManager
 
-AVATAR_COLORS = [
-    COLOR_BLUE,
-    COLOR_RED,
-    COLOR_GREEN,
-    COLOR_YELLOW,
-    COLOR_PURPLE,
-    COLOR_ORANGE,
-    COLOR_CYAN,
-    COLOR_PINK,
-    COLOR_LIME,
-    COLOR_LIGHT_ORANGE,
-]
+from users.managers import UserManager
 
 
 def generate_avatar(letter: str) -> ContentFile:

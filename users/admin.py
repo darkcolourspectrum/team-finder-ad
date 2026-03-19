@@ -12,15 +12,6 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ("email", "name", "surname")
     ordering = ("email",)
 
-    @admin.display(description="Аватар")
-    def avatar_thumbnail(self, obj):
-        if obj.avatar:
-            return format_html(
-                '<img src="{}" width="40" height="40" style="border-radius: 50%;" />',
-                obj.avatar.url,
-            )
-        return "-"
-
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (
@@ -48,3 +39,12 @@ class UserAdmin(BaseUserAdmin):
             "fields": ("email", "name", "surname", "password1", "password2"),
         }),
     )
+
+    @admin.display(description="Аватар")
+    def avatar_thumbnail(self, obj):
+        if obj.avatar:
+            return format_html(
+                '<img src="{}" width="40" height="40" style="border-radius: 50%;" />',
+                obj.avatar.url,
+            )
+        return "-"

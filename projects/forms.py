@@ -1,14 +1,7 @@
 from django import forms
 
-from .models import Project
-
-GITHUB_DOMAIN = "github.com"
-
-
-def validate_github_url(url):
-    if url and GITHUB_DOMAIN not in url:
-        raise forms.ValidationError("Ссылка должна вести на GitHub")
-    return url
+from projects.models import Project
+from validators import validate_github_url
 
 
 class ProjectForm(forms.ModelForm):

@@ -6,12 +6,13 @@ from constants import (
     PROJECT_STATUS_CLOSED,
     PROJECT_STATUS_MAX_LENGTH,
     PROJECT_STATUS_OPEN,
+    SKILL_NAME_MAX_LENGTH,
 )
 
 
 class Skill(models.Model):
     name = models.CharField(
-        max_length=124,
+        max_length=SKILL_NAME_MAX_LENGTH,
         unique=True,
         verbose_name="Название",
     )

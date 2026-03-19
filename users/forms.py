@@ -7,7 +7,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 from constants import NAME_MAX_LENGTH, SURNAME_MAX_LENGTH
-from projects.forms import validate_github_url
+from validators import validate_github_url
 from users.service import normalize_phone
 
 User = get_user_model()

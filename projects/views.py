@@ -26,7 +26,7 @@ def project_list_view(request):
     if active_skill:
         projects = projects.filter(skills__name=active_skill)
 
-    page_obj = paginate(projects, request.GET.get("page"))
+    page_obj = paginate(projects, request)
 
     return render(request, "projects/project_list.html", {
         "projects": page_obj,

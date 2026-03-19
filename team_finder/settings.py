@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from decouple import config
-from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -92,5 +91,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = reverse_lazy("users:login")
-LOGIN_REDIRECT_URL = "/projects/list/"
+LOGIN_URL = "users:login"
+LOGIN_REDIRECT_URL = "projects:list"

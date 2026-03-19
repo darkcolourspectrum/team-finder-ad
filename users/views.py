@@ -73,7 +73,7 @@ def change_password_view(request):
 
 def participants_view(request):
     users_qs = User.objects.order_by("-id")
-    page_obj = paginate(users_qs, request.GET.get("page"))
+    page_obj = paginate(users_qs, request)
     return render(
         request,
         "users/participants.html",
